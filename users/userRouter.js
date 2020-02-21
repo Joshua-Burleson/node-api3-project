@@ -1,47 +1,31 @@
 const express = require('express');
-
+const { validateUser } = require('../custom-middleware/customMiddleware');
+const IDsubrouter = require('./userIDSubRouter');
+const { get, insert } = require('./userDb');
 const router = express.Router();
 
-router.post('/', (req, res) => {
-  // do your magic!
+router.use('/:id', IDsubrouter);
+
+router.post('/', validateUser, async (req, res) => {
+  try {
+    const user = {name: req.body.name};
+    const addedUser = await insert(user);
+    res.status(200).send(JSON.stringify(addedUser));
+  }
+  catch(exception) {
+    res.status(500).send(String(exception));
+  }
 });
 
-router.post('/:id/posts', (req, res) => {
-  // do your magic!
+router.get('/', async (req, res) => {
+  try {
+    const users = await get();
+    res.status(200).send(JSON.stringify(users));
+  }
+  catch(exception){
+    res.status(500).send(String(exception));
+  }
 });
 
-router.get('/', (req, res) => {
-  // do your magic!
-});
-
-router.get('/:id', (req, res) => {
-  // do your magic!
-});
-
-router.get('/:id/posts', (req, res) => {
-  // do your magic!
-});
-
-router.delete('/:id', (req, res) => {
-  // do your magic!
-});
-
-router.put('/:id', (req, res) => {
-  // do your magic!
-});
-
-//custom middleware
-
-function validateUserId(req, res, next) {
-  // do your magic!
-}
-
-function validateUser(req, res, next) {
-  // do your magic!
-}
-
-function validatePost(req, res, next) {
-  // do your magic!
-}
 
 module.exports = router;
